@@ -60,10 +60,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\CharacterController2D.cs" />
+    <Compile Include="Assets\FireBall.cs" />
+    <Compile Include="Assets\Scripts\PlayerController2D.cs" />
+    <Compile Include="Assets\Scripts\PlayerMelee.cs" />
+    <Compile Include="Assets\Scripts\PlayerRanged.cs" />
+    <Compile Include="Assets\SmokeExplosion.cs" />
     <None Include="Assets\PreMade\Ninja Files\Read Me.txt" />
     <None Include="Assets\PreMade\Medieval Pixel Art\pixel_snapping_README.txt" />
     <None Include="Assets\PreMade\Dragon Warrior Files\Read Me.txt" />
+    <Reference Include="Cinemachine">
+      <HintPath>C:/Users/Alberto Giudice/Documents/Ninja2D/Library/ScriptAssemblies/Cinemachine.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/Alberto Giudice/Documents/Ninja2D/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -72,6 +79,9 @@
     </Reference>
     <Reference Include="Unity.CollabProxy.Editor">
       <HintPath>C:/Users/Alberto Giudice/Documents/Ninja2D/Library/ScriptAssemblies/Unity.CollabProxy.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="com.unity.cinemachine.editor">
+      <HintPath>C:/Users/Alberto Giudice/Documents/Ninja2D/Library/ScriptAssemblies/com.unity.cinemachine.editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/Alberto Giudice/Documents/Ninja2D/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
