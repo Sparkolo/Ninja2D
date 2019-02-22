@@ -12,6 +12,7 @@ public class PlayerMelee : MonoBehaviour
     [SerializeField] private float atkRange = 0.9f; // radius of the attack range circle
     [SerializeField] private int atkDamage = 40; // damage inflicted by the attack if you hit
     public Animator animator; // reference to the Animator component of the player, in order to trigger attack animations and check when not to attack
+    bool _enemyDamaged = false;
 
     // Update is called once per frame
     void Update()
@@ -25,7 +26,11 @@ public class PlayerMelee : MonoBehaviour
                     Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(atkPosition.position, atkRange, identifyEnemy); // check if there's any enemy inside the attack range
                     for (int i = 0; i < enemiesToDamage.Length; i++) // loop though all the enemies inside the attack range and inflict them the attack damage
                     {
-                        //enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                        if(enemiesToDamage[i].GetComponent<EnemyFrog>())
+                        {
+                            enemiesToDamage[i].GetComponent<EnemyFrog>().TakeDamage(atkDamage, gameObject.transform.rotation.y);
+                            _enemyDamaged = true;
+                        }
                     }
 
                     if(animator.GetBool("isJumping")) // if the player is jumping, play the jump attack animation. Also the cooldown will be a bit longer. 
@@ -64,5 +69,14 @@ public class PlayerMelee : MonoBehaviour
     {
         yield return new WaitForSeconds(timeToWait); // wait the cooldown time of the current attack before ending the animation
         animator.SetBool(atkType, false); // end the attack animation
+
+        // check again if you hit an enemy at the end of the animation, so that you don't miss it 
+        Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(atkPosition.position, atkRange, identifyEnemy); // check if there's any enemy inside the attack range
+        for (int i = 0; i < enemiesToDamage.Length; i++) // loop though all the enemies inside the attack range and inflict them the attack damage
+        {
+            if (!_enemyDamaged) 
+                enemiesToDamage[i].GetComponent<EnemyFrog>().TakeDamage(atkDamage, gameObject.transform.rotation.y);
+            _enemyDamaged = false;
+        }
     }
 }

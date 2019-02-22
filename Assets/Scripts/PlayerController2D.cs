@@ -14,7 +14,6 @@ public class PlayerController2D : MonoBehaviour
 	[SerializeField] private Transform m_CeilingCheck;							// A position marking where to check for ceilings
 	[SerializeField] private Collider2D m_CrouchDisableCollider;				// A collider that will be disabled when crouching
     public Animator animator;                                                   // Reference to the player's animator in order to change animation states and perform some checks
-    [SerializeField] private GameObject smokePrefab; // prefab referring to the smoke explosion animation
 
 
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
@@ -35,8 +34,6 @@ public class PlayerController2D : MonoBehaviour
     private void Awake()
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
-        GameObject initialSmoke = Instantiate(smokePrefab, this.transform.position, this.transform.rotation);
-        initialSmoke.transform.localScale = new Vector2(1.5f, 1.5f);
     }
 
     // FUNCTION CALLED EVERY SCREEN UPDATE
@@ -89,7 +86,10 @@ public class PlayerController2D : MonoBehaviour
             }
 		}
 
-        Move(horizontalMove * Time.fixedDeltaTime, isCrouching, isJumping); // pass the infos about movement, jump and crouch inputs to the Move function
+        if(!animator.GetBool("hasDied"))
+        {
+            Move(horizontalMove * Time.fixedDeltaTime, isCrouching, isJumping); // pass the infos about movement, jump and crouch inputs to the Move function
+        }
         isJumping = false; // after you make the player move, disable the jumping variable so that the player doesn't continuosly jump if you hold down the jump key
     }
 
