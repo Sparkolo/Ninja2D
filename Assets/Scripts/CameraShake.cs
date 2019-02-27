@@ -30,10 +30,4 @@ public class CameraShake : MonoBehaviour
         noise.m_AmplitudeGain = 0;
         noise.m_FrequencyGain = 0;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

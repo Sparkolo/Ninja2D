@@ -1,0 +1,2 @@
+C:\Users\Alberto Giudice\Documents\Ninja2D\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+C:\Users\Alberto Giudice\Documents\Ninja2D\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache

@@ -60,17 +60,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Player.cs" />
     <Compile Include="Assets\Scripts\CameraShake.cs" />
+    <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\EnemyEagle.cs" />
     <Compile Include="Assets\Scripts\EnemyExplosion.cs" />
     <Compile Include="Assets\Scripts\EnemyFrog.cs" />
     <Compile Include="Assets\Scripts\FireBall.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerController2D.cs" />
     <Compile Include="Assets\Scripts\PlayerMelee.cs" />
     <Compile Include="Assets\Scripts\PlayerRanged.cs" />
     <Compile Include="Assets\Scripts\SmokeExplosion.cs" />
-    <Compile Include="Assets\TriggerEnemyDamage.cs" />
+    <Compile Include="Assets\Scripts\TriggerEnemyDamage.cs" />
+    <Compile Include="Assets\Scripts\Vcam.cs" />
     <None Include="Assets\PreMade\Ninja Files\Read Me.txt" />
     <None Include="Assets\PreMade\Medieval Pixel Art\pixel_snapping_README.txt" />
     <None Include="Assets\PreMade\Dragon Warrior Files\Read Me.txt" />

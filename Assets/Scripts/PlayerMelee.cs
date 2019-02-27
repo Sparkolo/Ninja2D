@@ -9,7 +9,7 @@ public class PlayerMelee : MonoBehaviour
 
     [SerializeField] private Transform atkPosition; // reference to the attack start position in Unity
     [SerializeField] private LayerMask identifyEnemy; // reference to the enemies' type, in order to know what to check to be hit from an attack
-    [SerializeField] private float atkRange = 0.9f; // radius of the attack range circle
+    [SerializeField] private float atkRange = 1.1f; // radius of the attack range circle
     [SerializeField] private int atkDamage = 40; // damage inflicted by the attack if you hit
     public Animator animator; // reference to the Animator component of the player, in order to trigger attack animations and check when not to attack
     bool _enemyDamaged = false;
@@ -23,7 +23,7 @@ public class PlayerMelee : MonoBehaviour
             {
                 if (!animator.GetBool("isCrouching")) // only attack if the player isn't crouching at the moment
                 {
-                    Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(atkPosition.position, atkRange, identifyEnemy); // check if there's any enemy inside the attack range
+                    Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(atkPosition.position - new Vector3(.3f, 0, 0), atkRange, identifyEnemy); // check if there's any enemy inside the attack range
                     for (int i = 0; i < enemiesToDamage.Length; i++) // loop though all the enemies inside the attack range and inflict them the attack damage
                     {
                         if(enemiesToDamage[i].GetComponent<EnemyFrog>())
@@ -52,16 +52,16 @@ public class PlayerMelee : MonoBehaviour
         {
             remainingAtkTime -= Time.deltaTime; // If it's still in cooldown, reduce the reload time left of the ammount of time passed since last check
         }
-
-        //  METHOD TO VISUALLY SEE THE ATTACK RADIUS OF EFFECT
-        /*  
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(atkPosition.position, atkRange);
-        }
-        */
     }
+
+    //  METHOD TO VISUALLY SEE THE ATTACK RADIUS OF EFFECT
+    /*
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(atkPosition.position - new Vector3(.3f,0,0), atkRange);
+    }
+    */
 
 
     // COROUTINE TO DISABLE THE ATK ANIMATION AFTER THE ATK RELOAD TIME PASSES
@@ -74,8 +74,10 @@ public class PlayerMelee : MonoBehaviour
         Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(atkPosition.position, atkRange, identifyEnemy); // check if there's any enemy inside the attack range
         for (int i = 0; i < enemiesToDamage.Length; i++) // loop though all the enemies inside the attack range and inflict them the attack damage
         {
-            if (!_enemyDamaged) 
-                enemiesToDamage[i].GetComponent<EnemyFrog>().TakeDamage(atkDamage, gameObject.transform.rotation.y);
+            if (!_enemyDamaged)
+            {
+                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(atkDamage, gameObject.transform.rotation.y);
+            }
             _enemyDamaged = false;
         }
     }

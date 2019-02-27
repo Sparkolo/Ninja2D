@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class EnemyFrog : MonoBehaviour
+public class EnemyFrog : Enemy
 {
     [SerializeField] private int health = 100;
     [SerializeField] private GameObject deathEffect;
@@ -65,7 +65,6 @@ public class EnemyFrog : MonoBehaviour
 
                 if (!groundInfo.collider || groundInfo.collider.name == "BackgroundTiles")
                 {
-                    Debug.Log(groundInfo.collider);
                     if (m_FacingRight == true)
                     {
                         transform.eulerAngles = new Vector3(0, -180, 0);
@@ -148,7 +147,7 @@ public class EnemyFrog : MonoBehaviour
         animator.SetBool("isJumping", true);
     }
 
-    public void TakeDamage(int damage, float playerRotation)
+    public override void TakeDamage(int damage, float playerRotation)
     {
         health -= damage;
         camShake.Shake(0.5f);

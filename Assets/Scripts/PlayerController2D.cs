@@ -15,6 +15,8 @@ public class PlayerController2D : MonoBehaviour
 	[SerializeField] private Collider2D m_CrouchDisableCollider;				// A collider that will be disabled when crouching
     public Animator animator;                                                   // Reference to the player's animator in order to change animation states and perform some checks
 
+    public bool canMove = true;
+
 
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 	private bool m_Grounded;            // Whether or not the player is grounded.
@@ -86,7 +88,7 @@ public class PlayerController2D : MonoBehaviour
             }
 		}
 
-        if(!animator.GetBool("hasDied"))
+        if(!animator.GetBool("hasDied") && canMove)
         {
             Move(horizontalMove * Time.fixedDeltaTime, isCrouching, isJumping); // pass the infos about movement, jump and crouch inputs to the Move function
         }
