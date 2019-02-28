@@ -9,13 +9,19 @@ public class PlayerRanged : MonoBehaviour
     [SerializeField] private Transform firePoint; // reference to the ranged attack start position in Unity
     [SerializeField] private GameObject fireBallPrefab;
     public Animator animator; // reference to the Animator component of the player, in order to trigger attack animations and check when not to attack
+    private bool rangedAttacking = false;
 
+    public void RangedAttack()
+    {
+        rangedAttacking = true;
+    }
+       
     // Update is called once per frame
     void Update()
     {
         if (remainingAtkTime <= 0) // if you don't have any cooldown to wait check for attacks
         {
-            if (Input.GetButtonDown("Fire2")) // check if the player pressed the secondary attack key
+            if (rangedAttacking) // check if the player pressed the secondary attack key
             {
                 if (!animator.GetBool("isCrouching")) // only shoot the fire ball if the player isn't crouching at the moment
                 {
@@ -24,6 +30,7 @@ public class PlayerRanged : MonoBehaviour
                    animator.SetBool("isRangedAttacking", true); // start the ranged attack animation
                    StartCoroutine(WaitAtkEnd("isRangedAttacking", 0.5f)); // coroutine to end the attack animation
                    remainingAtkTime = defaultReloadAtkTime; // reset the cooldown to be waited before next attack
+                   rangedAttacking = false;
                 }
             }
         }

@@ -17,6 +17,10 @@ public class PlayerController2D : MonoBehaviour
 
     public bool canMove = true;
 
+    [Header("Optional: ")]
+    [SerializeField] private StatusIndicator statusInd;
+    [SerializeField] private Joystick joystick;
+
 
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 	private bool m_Grounded;            // Whether or not the player is grounded.
@@ -41,21 +45,33 @@ public class PlayerController2D : MonoBehaviour
     // FUNCTION CALLED EVERY SCREEN UPDATE
     private void Update()
     {
-        horizontalMove = Input.GetAxisRaw("Horizontal") * m_RunSpeed; // -1 if moving left, 0 if not moving, 1 if moving right. Values taken from button press or analog sticks 
-        if (Input.GetButtonDown("Jump")) // check if the player just tried to jump and pass that to the Move function
+        if(joystick.Horizontal >= 0.3f)
+        {
+            horizontalMove = m_RunSpeed; // -1 if moving left, 0 if not moving, 1 if moving right. Values taken from button press or analog sticks 
+        }
+        else if (joystick.Horizontal <= -0.3f)
+        {
+            horizontalMove = -m_RunSpeed; // -1 if moving left, 0 if not moving, 1 if moving right. Values taken from button press or analog sticks 
+        }
+        else
+        {
+            horizontalMove = 0;
+        }
+
+        if (joystick.Vertical >= 0.5f) // check if the player just tried to jump and pass that to the Move function
         {
             isJumping = true;
             m_JumpStarted = true;
             StartCoroutine(JumpAnimationFix()); // coroutine to avoid colliding with the ground as soon as you start jumping
         }
-        if (Input.GetButtonDown("Crouch")) // check if the player is currently trying to crouch
+        if (joystick.Vertical <= -0.5f) // check if the player is currently trying to crouch
         {
             if(!animator.GetBool("isJumping")) // if the player is in the middle of a jump, don't let it crouch. If not, let the crouch begin!
             {
                 isCrouching = true;
             }
         }
-        else if (Input.GetButtonUp("Crouch")) // check if the player isn't pressing the crouch button anymore, and pass that to the Move function
+        else // check if the player isn't pressing the crouch button anymore, and pass that to the Move function
         {
             isCrouching = false;
         }
@@ -179,6 +195,7 @@ public class PlayerController2D : MonoBehaviour
 		// Switch the way the player is labelled as facing.
 		m_FacingRight = !m_FacingRight;
 
-        transform.Rotate(0f, 180f, 0f); // rotate the player 180° on the y axis. This way its children object will rotate with it.
-	}
+        transform.Rotate(0f, 180f, 0f); // rotate the player 180° on the y axis. This way its children object will rotate with it. 
+        statusInd.transform.localScale = new Vector3(-statusInd.transform.localScale.x, statusInd.transform.localScale.y, statusInd.transform.localScale.z);
+    }
 }

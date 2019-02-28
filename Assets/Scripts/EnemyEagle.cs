@@ -3,7 +3,13 @@ using UnityEngine;
 
 public class EnemyEagle : Enemy
 {
-    [SerializeField] private int health = 50;
+    [SerializeField] private int maxHealth = 50;
+    private int _curHealth;
+    public int curHealth
+    {
+        get { return _curHealth; }
+        set { _curHealth = Mathf.Clamp(value, 0, maxHealth); }
+    }
     [SerializeField] private GameObject deathEffect;
     private Rigidbody2D m_Rigidbody2D;
     [SerializeField] private float defaultDazeTime = 0.5f;
@@ -22,6 +28,10 @@ public class EnemyEagle : Enemy
     private float _curDist;
     private bool m_FacingRight = false;  // For determining which way the player is currently facing.
     private bool currentlyAttacking = true;
+    private float nextSearchTime = 0;
+
+    [Header("Optional: ")]
+    [SerializeField] private StatusIndicator statusInd;
 
     private void Awake()
     {
@@ -33,6 +43,12 @@ public class EnemyEagle : Enemy
     // Start is called before the first frame update
     void Start()
     {
+        curHealth = maxHealth;
+        if(statusInd != null)
+        {
+            statusInd.SetHealth(curHealth, maxHealth);
+        }
+
         camShake = GameMaster.gm.GetComponent<CameraShake>();
         if (camShake == null)
         {
@@ -48,55 +64,76 @@ public class EnemyEagle : Enemy
     // Update is called once per frame
     void Update()
     {
-        if(curDazeTime <= 0)
+        if (player == null)
         {
-            if (m_FacingRight)
-            {
-                if (player.position.x < gameObject.transform.position.x)
-                {
-                    transform.eulerAngles = new Vector3(0, 0, 0);
-                    m_FacingRight = false;
-                }
-            }
+            if (nextSearchTime <= 0)
+                FindPlayer();
             else
-            {
-                if (player.position.x > gameObject.transform.position.x)
-                {
-                    transform.eulerAngles = new Vector3(0, -180, 0);
-                    m_FacingRight = true;
-                }
-            }
-
-            if (currentlyAttacking)
-            {
-                _curDist = Vector2.Distance(transform.position, player.position);
-                if (_curDist < stopDistance)
-                {
-                    if (_curDist <= retreatDistance)
-                    {
-                        currentlyAttacking = false;
-                        StartCoroutine(WaitForNextAttack());
-                    }
-                    else if (_curDist < criticalDistance)
-                    {
-                        transform.position = Vector2.MoveTowards(transform.position, player.position, criticalSpeed * Time.deltaTime);
-                    }
-                    else
-                    {
-                        transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
-                    }
-                }
-            }
-            else
-            {
-                    transform.position = Vector2.MoveTowards(transform.position, transform.position + new Vector3(1f, 1f, 0), criticalSpeed * Time.deltaTime);
-            }
+                nextSearchTime -= Time.deltaTime;
         }
         else
         {
-            curDazeTime -= Time.deltaTime;
+            if (curDazeTime <= 0)
+            {
+                if (m_FacingRight)
+                {
+                    if (player.position.x < gameObject.transform.position.x)
+                    {
+                        transform.eulerAngles = new Vector3(0, 0, 0);
+                        statusInd.transform.localScale = new Vector3(-statusInd.transform.localScale.x, statusInd.transform.localScale.y, statusInd.transform.localScale.z);
+                        m_FacingRight = false;
+                    }
+                }
+                else
+                {
+                    if (player.position.x > gameObject.transform.position.x)
+                    {
+                        transform.eulerAngles = new Vector3(0, -180, 0);
+                        statusInd.transform.localScale = new Vector3(-statusInd.transform.localScale.x, statusInd.transform.localScale.y, statusInd.transform.localScale.z);
+                        m_FacingRight = true;
+                    }
+                }
+
+                if (currentlyAttacking)
+                {
+                    _curDist = Vector2.Distance(transform.position, player.position);
+                    if (_curDist < stopDistance)
+                    {
+                        if (_curDist <= retreatDistance)
+                        {
+                            currentlyAttacking = false;
+                            StartCoroutine(WaitForNextAttack());
+                        }
+                        else if (_curDist < criticalDistance)
+                        {
+                            transform.position = Vector2.MoveTowards(transform.position, player.position, criticalSpeed * Time.deltaTime);
+                        }
+                        else
+                        {
+                            transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+                        }
+                    }
+                }
+                else
+                {
+                    transform.position = Vector2.MoveTowards(transform.position, transform.position + new Vector3(1f, 1f, 0), criticalSpeed * Time.deltaTime);
+                }
+            }
+            else
+            {
+                curDazeTime -= Time.deltaTime;
+            }
+        }     
+    }
+
+    void FindPlayer()
+    {
+        GameObject searchResult = GameObject.FindGameObjectWithTag("Player");
+        if (searchResult != null)
+        {
+            player = searchResult.transform;
         }
-               
+        nextSearchTime = 0.5f;
     }
 
     IEnumerator WaitForNextAttack()
@@ -107,10 +144,10 @@ public class EnemyEagle : Enemy
 
     public override void TakeDamage(int damage, float playerRotation)
     {
-        health -= damage;
+        curHealth -= damage;
         camShake.Shake(0.5f);
 
-        if (health <= 0)
+        if (curHealth == 0)
         {
             Die();
         }
@@ -128,6 +165,8 @@ public class EnemyEagle : Enemy
                 //transform.Translate(new Vector2(1f, 0.5f));
                 m_Rigidbody2D.AddForce(new Vector2(-1f, 1f), ForceMode2D.Impulse);
             }
+
+            statusInd.SetHealth(curHealth, maxHealth);
 
             animator.SetBool("hasBeenDamaged", true);
             StartCoroutine(DamageEndAnimation());
@@ -151,5 +190,6 @@ public class EnemyEagle : Enemy
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Physics2D.IgnoreLayerCollision(9, 10);
+        Physics2D.IgnoreLayerCollision(9, 9);
     }
 }

@@ -14,12 +14,19 @@ public class PlayerMelee : MonoBehaviour
     public Animator animator; // reference to the Animator component of the player, in order to trigger attack animations and check when not to attack
     bool _enemyDamaged = false;
 
+    private bool meleeAttacking = false;
+
     // Update is called once per frame
-    void Update()
+    public void MeleeAttack()
+    {
+        meleeAttacking = true;
+    }
+
+    public void Update()
     {
         if (remainingAtkTime <= 0) // if you don't have any cooldown to wait check for attacks
         {
-            if (Input.GetButtonDown("Fire1")) // check if the player pressed the main attack key
+            if (meleeAttacking) // check if the player pressed the main attack key
             {
                 if (!animator.GetBool("isCrouching")) // only attack if the player isn't crouching at the moment
                 {
@@ -45,6 +52,8 @@ public class PlayerMelee : MonoBehaviour
                         StartCoroutine(WaitAtkEnd("isAttacking", defaultReloadAtkTime)); // coroutine to end the attack animation
                         remainingAtkTime = defaultReloadAtkTime; // reset the cooldown to be waited before next attack
                     }
+
+                    meleeAttacking = false;
                 }
             }
         }

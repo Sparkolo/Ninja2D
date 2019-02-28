@@ -3,7 +3,13 @@ using UnityEngine;
 
 public class EnemyFrog : Enemy
 {
-    [SerializeField] private int health = 100;
+    [SerializeField] private int maxHealth = 100;
+    private int _curHealth;
+    public int curHealth
+    {
+        get { return _curHealth; }
+        set { _curHealth = Mathf.Clamp(value, 0, maxHealth); }
+    }
     [SerializeField] private GameObject deathEffect;
     [SerializeField] private float defaultDazeTime = 0.5f;
     private Rigidbody2D m_Rigidbody2D;
@@ -34,6 +40,9 @@ public class EnemyFrog : Enemy
     [SerializeField] private float reloadJumpTime = 3f;
     private float _curReloadJump = 0f;
 
+    [Header("Optional: ")]
+    [SerializeField] private StatusIndicator statusInd;
+
 
     private void Awake()
     {
@@ -44,6 +53,12 @@ public class EnemyFrog : Enemy
 
     private void Start()
     {
+        curHealth = maxHealth;
+        if (statusInd != null)
+        {
+            statusInd.SetHealth(curHealth, maxHealth);
+        }
+
         camShake = GameMaster.gm.GetComponent<CameraShake>();
         if(camShake == null)
         {
@@ -68,11 +83,13 @@ public class EnemyFrog : Enemy
                     if (m_FacingRight == true)
                     {
                         transform.eulerAngles = new Vector3(0, -180, 0);
+                        statusInd.transform.localScale = new Vector3(-Mathf.Abs(statusInd.transform.localScale.x), statusInd.transform.localScale.y, statusInd.transform.localScale.z);
                         m_FacingRight = false;
                     }
                     else
                     {
                         transform.eulerAngles = new Vector3(0, 0, 0);
+                        statusInd.transform.localScale = new Vector3(Mathf.Abs(statusInd.transform.localScale.x), statusInd.transform.localScale.y, statusInd.transform.localScale.z);
                         m_FacingRight = true;
                     }
                 }
@@ -149,10 +166,10 @@ public class EnemyFrog : Enemy
 
     public override void TakeDamage(int damage, float playerRotation)
     {
-        health -= damage;
+        curHealth -= damage;
         camShake.Shake(0.5f);
 
-        if (health <= 0)
+        if (curHealth == 0)
         {
             Die();
         }
@@ -165,9 +182,10 @@ public class EnemyFrog : Enemy
             else
                 m_Rigidbody2D.AddForce(new Vector2(200f, 0) * Time.deltaTime, ForceMode2D.Impulse);
 
+            statusInd.SetHealth(curHealth, maxHealth);
+
             animator.SetBool("hasBeenDamaged", true);
             StartCoroutine(DamageEndAnimation());
-
         }
     }
 
@@ -186,5 +204,6 @@ public class EnemyFrog : Enemy
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Physics2D.IgnoreLayerCollision(9,10);
+        Physics2D.IgnoreLayerCollision(9,9);
     }
 }

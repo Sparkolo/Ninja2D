@@ -6,12 +6,22 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 100;
     private int _curHealth;
+    public int curHealth
+    {
+        get { return _curHealth; }
+        set { _curHealth = Mathf.Clamp(value, 0, maxHealth); }
+    }
     private Rigidbody2D m_Rigidbody2D; // Reference to the player's RigidBody in order to make it move
     private CameraShake camShake;
     public Animator animator;
     [SerializeField] private GameObject smokePrefab; // prefab referring to the smoke explosion animation
     [SerializeField] private float invincibilityTime = 2f;
     private float _curInvincibilityCountdown = 0;
+    [SerializeField] private float fallBoundary = -20f;
+
+
+    [Header("Optional: ")]
+    [SerializeField] private StatusIndicator statusInd;
 
 
     private void Awake()
@@ -24,7 +34,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _curHealth = maxHealth;
+        curHealth = maxHealth;
         camShake = GameMaster.gm.GetComponent<CameraShake>();
         if (camShake == null)
         {
@@ -34,6 +44,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if(transform.position.y <= fallBoundary)
+        {
+            this.TakeDamage(9999, 0);
+        }
+
         if(_curInvincibilityCountdown > 0)
         {
             _curInvincibilityCountdown -= Time.deltaTime;
@@ -44,7 +59,7 @@ public class Player : MonoBehaviour
     {
         if (_curInvincibilityCountdown <= 0)
         {
-            _curHealth -= damage;
+            curHealth -= damage;
             _curInvincibilityCountdown = invincibilityTime;
             camShake.Shake(1f);
 
@@ -54,18 +69,17 @@ public class Player : MonoBehaviour
             }
             else
             {
-                Debug.Log(enemyRotation);
-                Debug.Log(gameObject.transform.rotation.y);
                 this.GetComponent<PlayerController2D>().canMove = false;
                 if (enemyRotation == 0)
                 {
-                    Debug.Log("hum");
                     m_Rigidbody2D.AddForce(new Vector2(-1f, 0), ForceMode2D.Impulse);
                 }
                 else
                 {
                     m_Rigidbody2D.AddForce(new Vector2(1f, 0), ForceMode2D.Impulse);
                 }
+
+                statusInd.SetHealth(curHealth, maxHealth);
 
                 animator.SetBool("hasBeenDamaged", true);
                 StartCoroutine(DamageEndAnimation());
@@ -91,6 +105,6 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         GameObject deathSmoke = Instantiate(smokePrefab, this.transform.position, this.transform.rotation);
         deathSmoke.transform.localScale = new Vector2(1.5f, 1.5f);
-        Destroy(gameObject);
+        GameMaster.KillPlayer(this);
     }
 }

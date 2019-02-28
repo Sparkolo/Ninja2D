@@ -43,10 +43,8 @@ public class FireBall : MonoBehaviour
     {
         if (collision.gameObject.layer != LayerMask.NameToLayer("Background")) // ignore collisions with the background elements
         {
-            Debug.Log("fireball");
             Enemy enemy = collision.GetComponent<Enemy>(); // check if the collision has hit an enemy
-
-            Debug.Log(enemy);
+            
             if (enemy != null) // if it did hit an enemy, damage it
             {
                 enemy.TakeDamage(damage, gameObject.transform.rotation.y);
