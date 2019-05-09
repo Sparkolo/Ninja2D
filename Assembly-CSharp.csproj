@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\PlayerRanged.cs" />
     <Compile Include="Assets\Scripts\RespawnUIController.cs" />
     <Compile Include="Assets\Scripts\SmokeExplosion.cs" />
+    <Compile Include="Assets\Scripts\Spikes.cs" />
     <Compile Include="Assets\Scripts\StatusIndicator.cs" />
     <Compile Include="Assets\Scripts\TriggerEnemyDamage.cs" />
     <Compile Include="Assets\Scripts\Vcam.cs" />

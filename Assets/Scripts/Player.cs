@@ -65,6 +65,7 @@ public class Player : MonoBehaviour
 
             if (_curHealth <= 0)
             {
+                statusInd.SetHealth(curHealth, maxHealth);
                 Die();
             }
             else
